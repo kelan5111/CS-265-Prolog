@@ -5,6 +5,8 @@ bird(moving_method, fly).
 bird(active_at, daylight).
 chicken(instance_of, bird).
 chicken(moving_method, hover).  % Overrides parent's moving_method
+chicken(relative_speed, 10.0).
+
 
 value(Frame, Slot, Value) :-
     Query =.. [Frame, Slot, Value],

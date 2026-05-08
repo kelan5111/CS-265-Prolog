@@ -16,13 +16,6 @@ fact(Fact) :-
     ParentFact =.. [Rel, ParentArg, Arg2], % Parent node's fact using the child nodes Arg2
     fact(ParentFact).   % Checks whether Parent's functor is a fact
 
-
-
-
 animal(bird).
 bird(chicken).
 moving_method(bird, fly).
-
-
-
-
