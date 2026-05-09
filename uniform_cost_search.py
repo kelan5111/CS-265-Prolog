@@ -1,10 +1,10 @@
 #################################
-####    Greedy Search application on Search Problem
+####    Uniform-cost Search application on Search Problem
 ###     @kelan5111
 #################################
 
 
-class GreedySearch():
+class UCSearch():
     def __init__(self, problem=None, goal=None):
 
         if problem is None: return
@@ -40,7 +40,7 @@ class GreedySearch():
             # 2. Expand func: successor func & forming nodes
             self._expand()
 
-            # 3. Search: heuristic which is lowest
+            # 3. Search: searches lowest g(n)
             next_node = self._search()
 
             if next_node != None:
@@ -55,7 +55,8 @@ class GreedySearch():
                 next_node = node
                 continue
             
-            if node["heuristic"] <= next_node["heuristic"]:
+            # Next node is the one with lowest cost
+            if node["path_cost"] <= next_node["path_cost"]:
                 next_node = node
 
         # Remove the next node from frontier
@@ -68,9 +69,6 @@ class GreedySearch():
             self._curr_depth -= 1
         
         return next_node
-    
-    def _calc_heuristic(self, node):
-        return self._goal - node
 
     def _expand(self):
        # 1. Expanding current node
@@ -82,8 +80,7 @@ class GreedySearch():
                 "state": state,
                 "parent": self._curr_node,
                 "action": action,
-                "path_cost": self._get_path_cost(state),
-                "heuristic": self._calc_heuristic(state)
+                "path_cost": self._get_path_cost(state)
             }
             self._frontier.append(new_node) # New node added to frontier
         
@@ -96,10 +93,9 @@ class GreedySearch():
             "state": problem["initial_state"],
             "parent": None,
             "action": None,
-            "path_cost": 0,
-            "heuristic": self._calc_heuristic(problem["initial_state"])
+            "path_cost": 0
         }
-
+        
         self._goal_test = problem["goal_test"]  # Returns: True/False
         self._get_successors = problem["successor_func"]    # Returns Dict: action-state pairs
         self._get_path_cost = problem["path_cost"]  # Returns: path cost of a specified state
