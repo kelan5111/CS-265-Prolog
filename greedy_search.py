@@ -82,7 +82,7 @@ class GreedySearch():
                 "state": state,
                 "parent": self._curr_node,
                 "action": action,
-                "path_cost": self._get_path_cost(state),
+                "path_cost": self._curr_node["path_cost"] + self._get_path_cost(state),
                 "heuristic": self._calc_heuristic(state)
             }
             self._frontier.append(new_node) # New node added to frontier
@@ -104,8 +104,16 @@ class GreedySearch():
         self._get_successors = problem["successor_func"]    # Returns Dict: action-state pairs
         self._get_path_cost = problem["path_cost"]  # Returns: path cost of a specified state
 
-
-
 def _successor_func(self):
         # Expanding current node children and adding to frontier
         return self._successors[self._curr_node]
+
+
+
+
+############################
+## Time Complexity: O(b^m)      b = branching factor, m = max depth
+## Space Complexity: O(b^m)     stores all nodes in frontier- can memory drain
+## Completeness: False          may reach dead ends- lead nowhere
+## Optimality: False            may reach dead ends- lead nowhere
+########################
