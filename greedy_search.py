@@ -3,6 +3,7 @@
 ###     @kelan5111
 #################################
 
+from queue import PriorityQueue
 
 class GreedySearch():
     def __init__(self, problem=None, goal=None):
@@ -10,13 +11,13 @@ class GreedySearch():
         if problem is None: return
 
         try:
+            if goal != None: self._goal = goal
+
             self.set_problem(problem)
 
             self._curr_action = None
             self._curr_depth = 0
-            self._frontier = []
-
-            if goal != None: self._goal = goal
+            self._frontier = PriorityQueue()
 
         except TypeError as e:
             print("Should be type Dic however got " + e)
@@ -33,7 +34,7 @@ class GreedySearch():
             if found:
                 print("Success")
                 break
-            elif len(self._frontier) == 0 and not found:
+            elif self._frontier.empty() and not found:
                 print("Failure.")
                 break
 
@@ -48,18 +49,8 @@ class GreedySearch():
                 self._curr_action = next_node["action"]
 
     def _search(self):
-        next_node = None
-
-        for node in self._frontier:
-            if next_node == None:
-                next_node = node
-                continue
-            
-            if node["heuristic"] <= next_node["heuristic"]:
-                next_node = node
-
-        # Remove the next node from frontier
-        self._frontier.remove(next_node)
+        # Remove the highest f(n) from priority queue
+        next_node = self._frontier.get()
 
         # Checking if node is child (depth)
         if next_node["parent"] == self._curr_node["state"]:
@@ -69,8 +60,11 @@ class GreedySearch():
         
         return next_node
     
-    def _calc_heuristic(self, node):
-        return self._goal - node
+    def _evaluation(self, path_cost):
+        if not hasattr(self, "_goal"): 
+            return 0
+
+        return self._goal["path_cost"] - path_cost
 
     def _expand(self):
        # 1. Expanding current node
@@ -83,13 +77,17 @@ class GreedySearch():
                 "parent": self._curr_node,
                 "action": action,
                 "path_cost": self._curr_node["path_cost"] + self._get_path_cost(state),
-                "heuristic": self._calc_heuristic(state)
+                "h(n)": self._evaluation(self._get_path_cost(state))
             }
-            self._frontier.append(new_node) # New node added to frontier
+
+            self._frontier.put((new_node["h(n)"], new_node)) # New node added to frontier
         
 
     def set_problem(self, problem):
         self._problem = problem
+        self._goal_test = problem["goal_test"]  # Returns: True/False
+        self._get_successors = problem["successor_func"]    # Returns Dict: action-state pairs
+        self._get_path_cost = problem["path_cost"]  # Returns: path cost of a specified state
 
         # Setting Initial State as Current State
         self._curr_node = {
@@ -97,12 +95,8 @@ class GreedySearch():
             "parent": None,
             "action": None,
             "path_cost": 0,
-            "heuristic": self._calc_heuristic(problem["initial_state"])
+            "h(n)": 0
         }
-
-        self._goal_test = problem["goal_test"]  # Returns: True/False
-        self._get_successors = problem["successor_func"]    # Returns Dict: action-state pairs
-        self._get_path_cost = problem["path_cost"]  # Returns: path cost of a specified state
 
 def _successor_func(self):
         # Expanding current node children and adding to frontier
