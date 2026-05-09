@@ -117,8 +117,8 @@ def _successor_func(self):
 
 
 ##############################
-## Time Complexity: O(b^m)          b = branch factor, d = shallowest depth
-## Space Complexity: O(b^m)         stores all nodes in frontier- can memory drain
+## Time Complexity: O(b^(C*/e))     C* = cost, e = minimal step cost
+## Space Complexity: O(b^(C*/e))    stores all nodes in frontier
 ## Completeness: True               always find a solution as long as step costs > 0 (relies on costs to calculate g(n))
-## Optimality: True                 first solution = cheapest
+## Optimality: True                 expands cheapest path first 
 #########################
