@@ -4,7 +4,7 @@
 #################################
 
 
-class ASearch():
+class AStarSearch():
     def __init__(self, problem=None, goal=None):
 
         if problem is None: return
@@ -40,7 +40,7 @@ class ASearch():
             # 2. Expand func: successor func & forming nodes
             self._expand()
 
-            # 3. Search: searches lowest g(n)
+            # 3. Search: heuristic which is lowest
             next_node = self._search()
 
             if next_node != None:
@@ -55,8 +55,7 @@ class ASearch():
                 next_node = node
                 continue
             
-            # Next node is the one with lowest cost
-            if node["path_cost"] <= next_node["path_cost"]:
+            if self._calc_overall_cost(node) <= self._calc_overall_cost(next_node):
                 next_node = node
 
         # Remove the next node from frontier
@@ -69,6 +68,14 @@ class ASearch():
             self._curr_depth -= 1
         
         return next_node
+    
+    def _calc_distance_cost(self, node):
+        h = self._goal["path_cost"] - node["path_cost"]
+
+        return h
+    
+    def _calc_overall_cost(self, node):
+        return node["heuristic"] + node["path_cost"]
 
     def _expand(self):
        # 1. Expanding current node
@@ -80,7 +87,8 @@ class ASearch():
                 "state": state,
                 "parent": self._curr_node,
                 "action": action,
-                "path_cost": self._get_path_cost(state)
+                "path_cost": self._curr_node["path_cost"] + self._get_path_cost(state),
+                "heuristic": self._calc_distance_cost(state)
             }
             self._frontier.append(new_node) # New node added to frontier
         
@@ -93,18 +101,13 @@ class ASearch():
             "state": problem["initial_state"],
             "parent": None,
             "action": None,
-            "path_cost": 0
+            "path_cost": 0,
+            "heuristic": 0
         }
-        
+
         self._goal_test = problem["goal_test"]  # Returns: True/False
         self._get_successors = problem["successor_func"]    # Returns Dict: action-state pairs
         self._get_path_cost = problem["path_cost"]  # Returns: path cost of a specified state
-
-
-
-def _successor_func(self):
-        # Expanding current node children and adding to frontier
-        return self._successors[self._curr_node]
 
 
 ##############################
